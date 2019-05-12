@@ -1,5 +1,5 @@
 # Wishlist Addon for Real Estate Manager
-<p>Its an addon for <a href="https://wordpress.org/plugins/real-estate-manager/">Real Estate Manager</a> to let your visitors to add properties to wishlist and then bulk contact their agents.</p>
+<p>Its an addon for <a href="https://webcodingplace.com/real-estate-manager-wordpress-plugin/">Real Estate Manager</a> to let your visitors to add properties to wishlist and then bulk contact their agents.</p>
 
 <h2 id="item-description__quick-links">Quick Links</h2>
 <ul>
