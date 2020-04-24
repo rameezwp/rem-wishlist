@@ -25,8 +25,11 @@ class REM_WISHLIST {
 
 		// adding wishlist button
 		add_action( 'rem_listing_footer', array( $this, 'add_wishlist_button' ) , 10, 3 );
-        
         add_action( 'rem_single_property_slider', array($this, 'add_wishlist_button_in_single_property' ), 10, 1 );
+        
+        // addning menu
+        add_action( 'admin_menu', array( $this, 'menu_pages' ) );
+
 		// shortcode for wishlist
 		add_shortcode( 'rem_wishlist', array( $this, 'rem_wishlist') );
 
@@ -35,16 +38,21 @@ class REM_WISHLIST {
 		add_action( 'wp_ajax_nopriv_rem_get_wishlist_properties', array( $this, 'get_wishlist_properties' ) );
 		add_action( 'wp_ajax_rem_wishlist_properties_inquiry', array( $this, 'send_email_about_wishlist_properties' ) );
 		add_action( 'wp_ajax_nopriv_rem_wishlist_properties_inquiry', array( $this, 'send_email_about_wishlist_properties' ) );
+		add_action('wp_ajax_is_user_logged_in', array( $this, 'rem_ajax_check_user_logged_in') );
+		add_action('wp_ajax_nopriv_is_user_logged_in', array( $this, 'rem_ajax_check_user_logged_in') );
+		add_action('wp_ajax_wishlist_in_user_profile', array( $this, 'rem_adding_wishlist_property_in_profile') );
 		
 		// add scripts for plugin
 		add_action( 'wp_enqueue_scripts', array( $this, 'load_frontend_scripts' ) );
 	}
 
 	function add_wishlist_button(  $property_id, $style = '' , $target = '' ) {
-	    
+
 	    echo ' <img class="rem-loading-img" src="'.REM_WISHLIST_URL.'/loading-icon.gif">';
-		echo '<a href="#" title="'.__( "Add to wishlist", "wishlist-real-estate-manager-extension").'" class="btn btn-default rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i>';
-		echo '</a>';
+	    if ( ($style != '1' && $style != '2' && REM_VERSION >= '10.7.0')  ) {
+	    	
+			echo '<a href="#" title="'.__( "Add to wishlist", "wishlist-real-estate-manager-extension").'" class="btn btn-default rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i></a>';
+	    }
 	}
 
 	function add_wishlist_button_in_single_property(  $property_id ) {
@@ -54,6 +62,14 @@ class REM_WISHLIST {
 		echo '<a href="#" title="'.__( "Add to wishlist", "wishlist-real-estate-manager-extension").'" class="btn btn-default btn-center rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i>';
 		echo '</a>';
 		echo '<p>';
+	}
+
+	function menu_pages(){
+		add_submenu_page( 'edit.php?post_type=rem_property', 'Agents Wishlist', __( 'Agents Wishlist', 'real-estate-manager' ), 'manage_options', 'rem_wishlisted_property', array($this, 'render_wishlisting_page') );
+	}
+
+	function render_wishlisting_page(){
+		include_once REM_WISHLIST_PATH. '/templates/wishlist-menu-page.php';
 	}
 
 	function rem_wishlist() {
@@ -91,22 +107,20 @@ class REM_WISHLIST {
 	}
 
 	function get_wishlist_properties() {
-		$prop_ids = $_REQUEST['property_ids'];
+		$user = wp_get_current_user();
+		$wishlistings = get_user_meta( $user->ID, "rem_wishlist_properties", true );
+		$prop_ids = isset($_REQUEST['property_ids']) ? $_REQUEST['property_ids'] : $wishlistings;
 		$args = array(
 			'post_type' => 'rem_property',
 			'posts_per_page' => -1,
 		    'post__in' => $prop_ids
 		);
-
+		$html = '';
 		$posts = get_posts($args);
 		foreach ($posts as $post) {
 					
 			$html .= 	"<tr>";
 				$html .= 	"<td class='img-wrap'>";
-					$html .= 	"<label class='product-check-label'>";
-						$html .=   "<input type='checkbox' class='property-check' value='" .esc_attr($post->ID)."'>";
-						$html .=   "<span class='checkmark'></span>";
-					$html .=  "</label>";
 					$html .=  get_the_post_thumbnail( $post->ID, array( '50', '50' ));
 				$html .= 	"</td>";
 				$html .= 	"<td><a href='". get_the_permalink($post->ID)."'>". $post->post_title. "</a> ". get_post_meta($post->ID,'rem_property_address', true)."</td>";
@@ -117,8 +131,9 @@ class REM_WISHLIST {
 				$html .= 	"</td>";
 			$html .= 	"</tr>";
 		}
+		$resp = array("ids" => $prop_ids, "html"=>$html );
 		// var_dump($html);
-		wp_send_json( $html );
+		wp_send_json( $resp );
 	}
 
 	function send_email_about_wishlist_properties(){
@@ -167,6 +182,20 @@ class REM_WISHLIST {
         return $resp;
     }
 
+    function rem_ajax_check_user_logged_in() {
+	    echo is_user_logged_in()?  true: false;
+	    die();
+	}
+
+	function rem_adding_wishlist_property_in_profile(){
+		
+		$property_ids = $_POST['property_ids'];
+		$user_id = get_current_user_id();
+		$wishlistings_old = get_user_meta( $user_id, "rem_wishlist_properties", true );
+		$updated = update_user_meta( $user_id, "rem_wishlist_properties", $property_ids, $wishlistings_old );
+		return $updated;
+		die();
+	}
 }
 add_action('plugins_loaded', 'rem_wishlist_start');
 function rem_wishlist_start() {
