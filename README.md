@@ -1,6 +1,6 @@
 # Wishlist Addon for Real Estate Manager
 <p>Its an addon for <a href="https://webcodingplace.com/real-estate-manager-wordpress-plugin/">Real Estate Manager</a> to let your visitors to add properties to wishlist and then bulk contact their agents.</p>
-~Current Version:1.3~
+
 <h2 id="item-description__quick-links">Quick Links</h2>
 <ul>
 	<li><a href="https://kb.webcodingplace.com/real-estate-manager/wish-list-addon/">Documentation</a></li>
@@ -11,7 +11,6 @@
 
 * Feature Added: Compatible with REM 10.7.0
 * Feature Added: Admins can check the bookmarked listings of logged in users
-* Feature Added: Auto update plugin, directly from wp dashboard
 
 = 1.2 =
 

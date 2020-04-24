@@ -201,29 +201,3 @@ function rem_wishlist_start() {
 	load_plugin_textdomain( 'wishlist-real-estate-manager-extension', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
 	return new REM_WISHLIST();
 }
-
-add_action( 'init', 'github_plugin_updater_test_init' );
-function github_plugin_updater_test_init() {
-
-	include_once 'updater.php';
-
-	define( 'WP_GITHUB_FORCE_UPDATE', true );
-
-	if ( is_admin() ) {
-
-		$config = array(
-			'slug' => plugin_basename( __FILE__ ),
-			'proper_folder_name' => 'rem-wishlist-master',
-			'api_url' => 'https://api.github.com/repos/rameezwp/rem-wishlist',
-			'raw_url' => 'https://raw.github.com/repos/rameezwp/rem-wishlist/master',
-			'github_url' => 'https://github.com/rameezwp/rem-wishlist',
-			'zip_url' => 'https://github.com/rameezwp/rem-wishlist/archive/master.zip',
-			'sslverify' => true,
-			'requires' => '5.4',
-			'tested' => '3.3',
-			'readme' => 'README.md',
-		);
-		new WP_GitHub_Updater( $config );
-	}
-
-}
