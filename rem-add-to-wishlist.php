@@ -3,7 +3,7 @@
  * Plugin Name: Wishlist - Real Estate Manager Extension
  * Plugin URI: https://webcodingplace.com/real-estate-manager-wordpress-plugin/
  * Description: Add properties to wishlist and then bulk contact.
- * Version: 1.2
+ * Version: 1.3
  * Author: WebCodingPlace
  * Author URI: https://webcodingplace.com/
  * License: GPLv2 or later
@@ -48,7 +48,6 @@ class REM_WISHLIST {
 
 	function add_wishlist_button(  $property_id, $style = '' , $target = '' ) {
 
-	    echo ' <img class="rem-loading-img" src="'.REM_WISHLIST_URL.'/loading-icon.gif">';
 	    if ( ($style != '1' && $style != '2' && REM_VERSION >= '10.7.0')  ) {
 	    	
 			echo '<a href="#" title="'.__( "Add to wishlist", "wishlist-real-estate-manager-extension").'" class="btn btn-default rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i></a>';
@@ -203,3 +202,28 @@ function rem_wishlist_start() {
 	return new REM_WISHLIST();
 }
 
+add_action( 'init', 'github_plugin_updater_test_init' );
+function github_plugin_updater_test_init() {
+
+	include_once 'updater.php';
+
+	define( 'WP_GITHUB_FORCE_UPDATE', true );
+
+	if ( is_admin() ) {
+
+		$config = array(
+			'slug' => plugin_basename( __FILE__ ),
+			'proper_folder_name' => 'rem-wishlist-master',
+			'api_url' => 'https://api.github.com/repos/rameezwp/rem-wishlist',
+			'raw_url' => 'https://raw.github.com/repos/rameezwp/rem-wishlist/master',
+			'github_url' => 'https://github.com/rameezwp/rem-wishlist',
+			'zip_url' => 'https://github.com/rameezwp/rem-wishlist/archive/master.zip',
+			'sslverify' => true,
+			'requires' => '5.4',
+			'tested' => '3.3',
+			'readme' => 'README.md',
+		);
+		new WP_GitHub_Updater( $config );
+	}
+
+}

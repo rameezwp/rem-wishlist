@@ -12,7 +12,6 @@ jQuery(document).ready(function($) {
 	$.post(rem_wishlist_var.ajaxurl, data, function(response) {
 
 	    is_user_logged_in = response;
-		console.log(is_user_logged_in);
 	});
 	/*
 	 *
@@ -26,6 +25,7 @@ jQuery(document).ready(function($) {
 
 			if (existing_prop.indexOf(prop_id) !== -1) {
 				$(this).html("");
+				$(this).addClass('active');
 				$(this).append( '<i class="fas fa-heart"></i>' );
 				$(this).attr( "title", rem_wishlist_var.icon_title_attr_remove );
 			};
@@ -74,7 +74,6 @@ jQuery(document).ready(function($) {
 		var existing_prop = rem_get_wishlist_property();
 		//removing index
 		var prop_index = existing_prop.indexOf(pid);
-		console.log(prop_index);
 		existing_prop.splice(prop_index, 1);
 		// now updating fav local storage
 		store.set('rem_wishlist_properties_test', existing_prop);	
@@ -113,8 +112,6 @@ jQuery(document).ready(function($) {
 	 *
 	*/
 	var property_ids = rem_get_wishlist_property();
-	console.log(is_user_logged_in);
-	console.log(property_ids);
 	if (property_ids != undefined ) {
 		var data = {
 			"action" : "rem_get_wishlist_properties",
@@ -134,7 +131,6 @@ jQuery(document).ready(function($) {
 			}
 			// $(".rem-wishlist-table").hide();
 			$.post(rem_wishlist_var.ajaxurl, data, function(resp) {
-		        console.log(resp);
 		        $('.loading-table').remove();
 		        $('.wishlist_table_boday').append(resp.html)
 				$('.rem-wishlist-table').slideDown("slow");
@@ -179,20 +175,17 @@ jQuery(document).ready(function($) {
 		event.preventDefault();
 		var btn  = $(this);
 		var property_id = $(this).data('id');
-		var loading_img = $(this).siblings('.rem-loading-img');
 		var already_in_wishlist = $(this).children("i.fas.fa-heart").length > 0 ? true : false;
 		
-		loading_img.css( 'opacity', "1");
 		if ( !already_in_wishlist ) {
 			// seting in local storage
 			var stored = rem_set_wishlist(property_id);
 			if (stored) {
-				// hide loading
-	            loading_img.css( 'opacity', '0' );
 	            // add icon by ajax
 	            btn.html("");
+	            btn.addClass('active');
 	            btn.append( '<i class="fas fa-heart"></i>' );
-	            btn.attr( "title", rem_wishlist_var.icon_title_attr_remove );
+	            btn.attr( "data-original-title", rem_wishlist_var.icon_title_attr_remove );
 				if (is_user_logged_in && is_user_logged_in != '') {
 
 	            	wishlist_in_user_profile();
@@ -213,15 +206,15 @@ jQuery(document).ready(function($) {
 					});
 				};
 			}else {
-				// hide loading
-	            loading_img.css( 'opacity', '0' );
+	            
 			};
 		}else{
 			rem_reset_wishlist(property_id);
-			loading_img.css( 'opacity', '0' );
+			
 			btn.children("i.fas.fa-heart").remove();
+			btn.removeClass('active');
 			btn.append( '<i class="far fa-heart"></i>' );
-			btn.attr( "title", rem_wishlist_var.icon_title_attr_added );
+			btn.attr( "data-original-title", rem_wishlist_var.icon_title_attr_added );
 			if (is_user_logged_in && is_user_logged_in != '') {
 
 				wishlist_in_user_profile();
@@ -258,7 +251,6 @@ jQuery(document).ready(function($) {
 		}
 
 		$.post(rem_wishlist_var.ajaxurl, data, function(response) {
-			console.log(response);
 		})
 	}
 });
