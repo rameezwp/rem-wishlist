@@ -132,11 +132,17 @@ jQuery(document).ready(function($) {
 			// $(".rem-wishlist-table").hide();
 			$.post(rem_wishlist_var.ajaxurl, data, function(resp) {
 		        $('.loading-table').remove();
-		        $('.wishlist_table_boday').append(resp.html)
-				$('.rem-wishlist-table').slideDown("slow");
-				$.each(resp.ids, function(index, id) {
-					rem_set_wishlist(id);
-				});
+		        if (resp.html != '') {
+
+			        $('.wishlist_table_boday').append(resp.html)
+					$('.rem-wishlist-table').slideDown("slow");
+					$.each(resp.ids, function(index, id) {
+						rem_set_wishlist(id);
+					});
+		        }else{
+		        	var not_found_msg = '<p class="alert alert-danger"><strong>'+rem_wishlist_var.empty_list_msg+'</strong></p>';
+					$('.wishlist-box').html(not_found_msg);
+		        };
 		    });
 		}else{
 
@@ -186,6 +192,7 @@ jQuery(document).ready(function($) {
 	            btn.addClass('active');
 	            btn.append( '<i class="fas fa-heart"></i>' );
 	            btn.attr( "data-original-title", rem_wishlist_var.icon_title_attr_remove );
+	            btn.attr( "title", rem_wishlist_var.icon_title_attr_remove );
 				if (is_user_logged_in && is_user_logged_in != '') {
 
 	            	wishlist_in_user_profile();
@@ -253,4 +260,48 @@ jQuery(document).ready(function($) {
 		$.post(rem_wishlist_var.ajaxurl, data, function(response) {
 		})
 	}
+
+
+	/*
+	 *
+	 * INQUERY FORM 
+	 *
+	*/
+	$(document).on('submit', '.rem-wishlist-inquiry-frm', function(event){
+		event.preventDefault();
+		var selected_properties = $('.rem-wishlist-table .property-check:checked').map(function() {
+        	return $(this).val();
+       	}).get();
+
+		if ( selected_properties.length != 0 ) {
+
+			var loading_img = $(this).find('.rem-loading-img');	
+			var ajaxurl = $('.ajaxurl').val();
+			var data = $(this).serialize();
+			var data = data+'&ids='+selected_properties;
+
+			loading_img.css( 'opacity', "1");
+			$.post(ajaxurl, data, function(resp) {
+		            
+	            // hide loading
+	            loading_img.css( 'opacity', '0' );
+	            var css_class = 'alert alert-success';
+	            $.each( resp ,function( index, val ){
+	            	if (val.status == 'Fail') {
+	            		css_class = 'alert alert-danger';
+	            		console.log(css_class);
+	            	};
+	            	$( ".responce-mesages" ).append( "<p class='"+css_class+"'><strong>"+val.msg+"</strong></p>" );
+	            });
+	        });
+
+	    }else {
+			swal({
+			    title: rem_wishlist_var.form_property_empty_title,
+			    text: rem_wishlist_var.form_property_empty_text,
+			    timer: 2000,
+			    button: false
+			});
+		};
+	});
 });

@@ -26,7 +26,7 @@ class REM_WISHLIST {
 		// adding wishlist button
 		add_action( 'rem_listing_footer', array( $this, 'add_wishlist_button' ) , 10, 3 );
         add_action( 'rem_single_property_slider', array($this, 'add_wishlist_button_in_single_property' ), 10, 1 );
-        
+        add_filter( 'rem_admin_settings_fields', array($this, 'social_share_settings_menu') );
         // addning menu
         add_action( 'admin_menu', array( $this, 'menu_pages' ) );
 
@@ -50,7 +50,7 @@ class REM_WISHLIST {
 
 	    if ( ($style != '1' && $style != '2' && REM_VERSION >= '10.7.0')  ) {
 	    	
-			echo '<a href="#" title="'.__( "Add to wishlist", "wishlist-real-estate-manager-extension").'" class="btn btn-default rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i></a>';
+			echo '<a href="#" title="'.rem_get_option('wl_added_tooltip', 'Add to wishlist').'" class="btn btn-default rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i></a>';
 	    }
 	}
 
@@ -92,14 +92,14 @@ class REM_WISHLIST {
             'already_exist' => __('Your wishlist is empty.', "wishlist-real-estate-manager-extension"),
             'already_exist_title' => __("Already Added", "wishlist-real-estate-manager-extension"),
             'already_exist_text' => __("Property already added.", "wishlist-real-estate-manager-extension"),
-            'removed_property_title' => __("Removed", "wishlist-real-estate-manager-extension"),
-            'removed_property_text' => __("Property removed from wishlist.", "wishlist-real-estate-manager-extension"),
-            'add_property_title' => __("Added", "wishlist-real-estate-manager-extension"),
-            'add_property_text' => __("Property added into wishlist.", "wishlist-real-estate-manager-extension"),
-            'icon_title_attr_remove' => __("Remove form wishlist", "wishlist-real-estate-manager-extension"),
-            'icon_title_attr_added' => __("Add to wishlist", "wishlist-real-estate-manager-extension"),
-            'form_property_empty_title' => __("Empty", "wishlist-real-estate-manager-extension"),
-            'form_property_empty_text' => __("Please select properties to contact", "wishlist-real-estate-manager-extension"),
+            'removed_property_title' => rem_get_option( 'wl_removing_heading', "Removed" ),
+            'removed_property_text' => rem_get_option( 'wl_removing_description', "Property removed from wishlist."),
+            'add_property_title' => rem_get_option( 'wl_added_heading', 'Added'),
+            'add_property_text' => rem_get_option('wl_added_description', 'Property added into wishlist.'),
+            'icon_title_attr_remove' => rem_get_option('wl_removing_tooltip', 'Remove form wishlist.'),
+            'icon_title_attr_added' => rem_get_option('wl_added_tooltip', 'Add to wishlist.'),
+            'form_property_empty_title' => rem_get_option('wl_empty_heading', "Empty"),
+            'form_property_empty_text' => rem_get_option( 'wl_empty_description', 'Please select properties to contact'),
         );
         wp_localize_script( 'rem-scripts', 'rem_wishlist_var', $localize_vars );
 		
@@ -109,26 +109,32 @@ class REM_WISHLIST {
 		$user = wp_get_current_user();
 		$wishlistings = get_user_meta( $user->ID, "rem_wishlist_properties", true );
 		$prop_ids = isset($_REQUEST['property_ids']) ? $_REQUEST['property_ids'] : $wishlistings;
-		$args = array(
-			'post_type' => 'rem_property',
-			'posts_per_page' => -1,
-		    'post__in' => $prop_ids
-		);
 		$html = '';
-		$posts = get_posts($args);
-		foreach ($posts as $post) {
-					
-			$html .= 	"<tr>";
-				$html .= 	"<td class='img-wrap'>";
-					$html .=  get_the_post_thumbnail( $post->ID, array( '50', '50' ));
-				$html .= 	"</td>";
-				$html .= 	"<td><a href='". get_the_permalink($post->ID)."'>". $post->post_title. "</a> ". get_post_meta($post->ID,'rem_property_address', true)."</td>";
-				$html .= 	"<td class='hidden-xs'>". ucfirst(get_post_meta($post->ID,"rem_property_type", true )) ."</td>";
-				$html .= 	"<td>";
-					$html .= 	"<img class='rem-loading-img' src='". REM_WISHLIST_URL ."/loading-icon.gif'>";
-					$html .= 	"<a href='' class='remove-property-btn' data-id='". $post->ID ."'><i class='fa fa-trash'></i></a>";
-				$html .= 	"</td>";
-			$html .= 	"</tr>";
+		if ($prop_ids != '') {
+			
+			$args = array(
+				'post_type' => 'rem_property',
+				'posts_per_page' => -1,
+			    'post__in' => $prop_ids
+			);
+			$posts = get_posts($args);
+			foreach ($posts as $post) {
+						
+				$html .= 	"<tr>";
+					$html .= 	"<td class='img-wrap'>";
+							$html .=   "<input type='checkbox' class='property-check' value='" .esc_attr($post->ID)."'>";
+								$html .=   "<span class='checkmark'></span>";
+							$html .=  "</label>";
+						$html .=  get_the_post_thumbnail( $post->ID, array( '50', '50' ));
+					$html .= 	"</td>";
+					$html .= 	"<td><a href='". get_the_permalink($post->ID)."'>". $post->post_title. "</a> ". get_post_meta($post->ID,'rem_property_address', true)."</td>";
+					$html .= 	"<td class='hidden-xs'>". ucfirst(get_post_meta($post->ID,"rem_property_type", true )) ."</td>";
+					$html .= 	"<td>";
+						$html .= 	"<img class='rem-loading-img' src='". REM_WISHLIST_URL ."/loading-icon.gif'>";
+						$html .= 	"<a href='' class='remove-property-btn' data-id='". $post->ID ."'><i class='fa fa-trash'></i></a>";
+					$html .= 	"</td>";
+				$html .= 	"</tr>";
+			}
 		}
 		$resp = array("ids" => $prop_ids, "html"=>$html );
 		// var_dump($html);
@@ -194,6 +200,86 @@ class REM_WISHLIST {
 		$updated = update_user_meta( $user_id, "rem_wishlist_properties", $property_ids, $wishlistings_old );
 		return $updated;
 		die();
+	}
+	function social_share_settings_menu($settings){
+	    $settings[] = array(
+	        'panel_title'   =>  __( 'Wishlist', 'real-estate-manager' ),
+	        'panel_name'   =>  'social_share',
+	        'icon'   		=>  '<span class="glyphicon glyphicon-heart"></span>',
+	        'fields'        => $this->get_wishlist_fields(),
+	    );
+
+		return $settings;
+	}
+	function get_wishlist_fields(){
+		$fields = array(
+
+	            array(
+	                'type' => 'text',
+	                'name' => 'wl_added_tooltip',
+	                'title' => __( 'Add to Wishlist Button Title', 'real-estate-manager' ),
+	                'help' => __( 'Provide button title text. Default value is "Add to wishlist"', 'real-estate-manager' ),
+	            ),
+
+	            array(
+	                'type' => 'text',
+	                'name' => 'wl_removing_tooltip',
+	                'title' => __( 'Remove form wishlist button', 'real-estate-manager' ),
+	                'help' => __( 'Provide button title text. Default value is "Remove form wishlist"', 'real-estate-manager' ),
+	            ),
+
+	            array(
+	                'type' => 'text',
+	                'name' => 'wl_added_heading',
+	                'title' => __( 'Added Heading', 'real-estate-manager' ),
+	                'help' => __( 'Provide heading text. Default  value is "Added".', 'real-estate-manager' ),
+	            ),
+
+	            array(
+	                'type' => 'text',
+	                'name' => 'wl_added_description',
+	                'title' => __( 'Added Description', 'real-estate-manager' ),
+	                'help' => __( 'Provide Description text.Default value is "Property added into wishlist"', 'real-estate-manager' ),
+	            ),
+
+	            array(
+	                'type' => 'text',
+	                'name' => 'wl_removing_heading',
+	                'title' => __( 'Remove Heading', 'real-estate-manager' ),
+	                'help' => __( 'Provide heading text. Default value is "Removed"', 'real-estate-manager' ),
+	            ),
+
+	            array(
+	                'type' => 'text',
+	                'name' => 'wl_removing_description',
+	                'title' => __( 'Remove Description', 'real-estate-manager' ),
+	                'help' => __( 'Provide Description text. Default value is "Property removed from wishlist"', 'real-estate-manager' ),
+	            ),
+
+	            array(
+	                'type' => 'text',
+	                'name' => 'wl_inquiry_heading',
+	                'title' => __( 'Inquiry form heading', 'real-estate-manager' ),
+	                'help' => __( 'Provide form heading text. Default value is "Contact Agents"', 'real-estate-manager' ),
+	            ),
+
+	            array(
+	                'type' => 'text',
+	                'name' => 'wl_empty_heading',
+	                'title' => __( 'Heading text to without selected property', 'real-estate-manager' ),
+	                'help' => __( 'Provide alert heading text to form submit without any property selected. Default value is "Empty"', 'real-estate-manager' ),
+	            ),
+
+	            array(
+	                'type' => 'text',
+	                'name' => 'wl_empty_description',
+	                'title' => __( 'Description text to without selected property.', 'real-estate-manager' ),
+	                'help' => __( 'Provide alert description text to form submit without any property selected. Default value is "Please select properties to contact"', 'real-estate-manager' ),
+	            ),              
+
+	    );
+		$fields = apply_filters( 'rem_wishlist_settings_field', $fields );
+		return $fields;
 	}
 }
 add_action('plugins_loaded', 'rem_wishlist_start');
