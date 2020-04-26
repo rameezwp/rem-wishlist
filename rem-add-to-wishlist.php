@@ -201,3 +201,8 @@ function rem_wishlist_start() {
 	load_plugin_textdomain( 'wishlist-real-estate-manager-extension', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
 	return new REM_WISHLIST();
 }
+
+require_once( 'REM_WISHLIST_PLUGIN_UPLOADER.php' );
+if ( is_admin() ) {
+    new REM_WISHLIST_PLUGIN_UPLOADER( __FILE__, 'rameezwp', "rem-wishlist" );
+}
