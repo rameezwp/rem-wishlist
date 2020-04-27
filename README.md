@@ -7,7 +7,18 @@
 </ul>
 <h2 id="item-description__changelog">Changelog</h2>
 
-= 1.3 - 25 April 2020 =
+
+= 1.5 =
+
+* Bug fixed - When user login all properties add to wishlist automatically
+
+= 1.4 =
+
+* Auto-update feature added
+* Settings added for plugin labels
+* Bug fixed
+
+= 1.3 =
 
 * Feature Added: Compatible with REM 10.7.0
 * Feature Added: Admins can check the bookmarked listings of logged in users
