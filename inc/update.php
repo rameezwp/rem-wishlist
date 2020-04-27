@@ -1,6 +1,6 @@
 <?php
 
-class REM_WISHLIST_PLUGIN_UPLOADER {
+class REM_WISHLIST_PLUGIN_UPDATER {
 
     private $slug; // plugin slug
     private $pluginData; // plugin data

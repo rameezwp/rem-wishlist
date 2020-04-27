@@ -288,7 +288,7 @@ function rem_wishlist_start() {
 	return new REM_WISHLIST();
 }
 
-require_once( 'REM_WISHLIST_PLUGIN_UPLOADER.php' );
+require_once( 'inc/update.php' );
 if ( is_admin() ) {
-    new REM_WISHLIST_PLUGIN_UPLOADER( __FILE__, 'rameezwp', "rem-wishlist" );
+    new REM_WISHLIST_PLUGIN_UPDATER( __FILE__, 'rameezwp', "rem-wishlist" );
 }
