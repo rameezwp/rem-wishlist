@@ -58,7 +58,7 @@ class REM_WISHLIST {
 	    
 		echo '<p class="text-center" style="margin-top: 5px;">';
 		echo ' <img class="rem-loading-img" src="'.REM_WISHLIST_URL.'/loading-icon.gif">';
-		echo '<a href="#" title="'.__( "Add to wishlist", "wishlist-real-estate-manager-extension").'" class="btn btn-default btn-center rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i>';
+		echo '<a href="#" title="'.rem_get_option('wl_added_tooltip', 'Add to wishlist').'" class="btn btn-default btn-center rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i>';
 		echo '</a>';
 		echo '<p>';
 	}
@@ -204,7 +204,7 @@ class REM_WISHLIST {
 	function social_share_settings_menu($settings){
 	    $settings[] = array(
 	        'panel_title'   =>  __( 'Wishlist', 'real-estate-manager' ),
-	        'panel_name'   =>  'social_share',
+	        'panel_name'   =>  'wishlist',
 	        'icon'   		=>  '<span class="glyphicon glyphicon-heart"></span>',
 	        'fields'        => $this->get_wishlist_fields(),
 	    );
