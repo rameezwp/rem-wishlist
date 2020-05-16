@@ -1,6 +1,6 @@
 <?php 
 /*
- * Plugin Name: Wishlist - Real Estate Manager Extension
+ * Plugin Name: Wishlist - Real Estate Manager Extension new
  * Plugin URI: https://webcodingplace.com/real-estate-manager-wordpress-plugin/
  * Description: Add properties to wishlist and then bulk contact.
  * Version: 1.5
@@ -122,6 +122,7 @@ class REM_WISHLIST {
 						
 				$html .= 	"<tr>";
 					$html .= 	"<td class='img-wrap'>";
+					$html .= '<label class="product-check-label">';
 							$html .=   "<input type='checkbox' class='property-check' value='" .esc_attr($post->ID)."'>";
 								$html .=   "<span class='checkmark'></span>";
 							$html .=  "</label>";
