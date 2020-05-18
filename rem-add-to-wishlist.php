@@ -1,6 +1,6 @@
 <?php 
 /*
- * Plugin Name: Wishlist - Real Estate Manager Extension new
+ * Plugin Name: Wishlist - Real Estate Manager Extension
  * Plugin URI: https://webcodingplace.com/real-estate-manager-wordpress-plugin/
  * Description: Add properties to wishlist and then bulk contact.
  * Version: 1.5
@@ -26,7 +26,7 @@ class REM_WISHLIST {
 		// adding wishlist button
 		add_action( 'rem_listing_footer', array( $this, 'add_wishlist_button' ) , 10, 3 );
         add_action( 'rem_single_property_slider', array($this, 'add_wishlist_button_in_single_property' ), 10, 1 );
-        add_filter( 'rem_admin_settings_fields', array($this, 'social_share_settings_menu') );
+        add_filter( 'rem_admin_settings_fields', array($this, 'wishlist_settings_menu') );
         // addning menu
         add_action( 'admin_menu', array( $this, 'menu_pages' ) );
 
@@ -122,7 +122,7 @@ class REM_WISHLIST {
 						
 				$html .= 	"<tr>";
 					$html .= 	"<td class='img-wrap'>";
-					$html .= '<label class="product-check-label">';
+						$html .= '<label class="product-check-label">';
 							$html .=   "<input type='checkbox' class='property-check' value='" .esc_attr($post->ID)."'>";
 								$html .=   "<span class='checkmark'></span>";
 							$html .=  "</label>";
@@ -202,7 +202,7 @@ class REM_WISHLIST {
 		return $updated;
 		die();
 	}
-	function social_share_settings_menu($settings){
+	function wishlist_settings_menu($settings){
 	    $settings[] = array(
 	        'panel_title'   =>  __( 'Wishlist', 'real-estate-manager' ),
 	        'panel_name'   =>  'wishlist',
