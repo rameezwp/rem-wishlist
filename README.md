@@ -7,6 +7,9 @@
 </ul>
 <h2 id="item-description__changelog">Changelog</h2>
 
+= 1.6 =
+
+* Bug fixed - Design wishlist form checkbox
 
 = 1.5 =
 
