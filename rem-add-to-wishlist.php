@@ -29,6 +29,7 @@ class REM_WISHLIST {
         add_filter( 'rem_admin_settings_fields', array($this, 'wishlist_settings_menu') );
         // addning menu
         add_action( 'admin_menu', array( $this, 'menu_pages' ) );
+        add_action( 'admin_enqueue_scripts', array($this, 'admin_scripts' ) );
 
 		// shortcode for wishlist
 		add_shortcode( 'rem_wishlist', array( $this, 'rem_wishlist') );
@@ -71,6 +72,13 @@ class REM_WISHLIST {
 		include_once REM_WISHLIST_PATH. '/templates/wishlist-menu-page.php';
 	}
 
+    function admin_scripts($check){
+    	
+    	// if ($check == 'rem_property_page_rem_wishlisted_property') {
+    		wp_enqueue_style( 'rem-bootstrap', REM_URL . '/assets/admin/css/bootstrap.min.css' );
+    		wp_enqueue_style( 'font-awesome-rem', REM_URL . '/assets/front/css/font-awesome.min.css' );
+    	// }
+    }
 	function rem_wishlist() {
 		
         wp_enqueue_style( 'font-awesome-rem', REM_URL . '/assets/front/css/font-awesome.min.css' );
