@@ -6,6 +6,11 @@
 	<li><a href="https://kb.webcodingplace.com/real-estate-manager/wish-list-addon/">Documentation</a></li>
 </ul>
 <h2 id="item-description__changelog">Changelog</h2>
+= 1.7 =
+
+* Wishlist button issue fixed
+* New phone field Added to form
+* loaded  design change
 
 = 1.6 =
 
