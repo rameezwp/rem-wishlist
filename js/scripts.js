@@ -89,6 +89,7 @@ jQuery(document).ready(function($) {
 	 *
 	*/
 	function rem_get_wishlist_property() {
+		$('.rem-loading-img').css({'display': 'inline-block'});
 		var existing_prop = store.get('rem_wishlist_properties_test');
 		if( existing_prop !== undefined ){
 			return existing_prop;
@@ -275,21 +276,21 @@ jQuery(document).ready(function($) {
 
 		if ( selected_properties.length != 0 ) {
 
-			var loading_img = $(this).find('.rem-loading-img');	
+			var loading_img = $(this).find('.form-loader');	
 			var ajaxurl = $('.ajaxurl').val();
 			var data = $(this).serialize();
 			var data = data+'&ids='+selected_properties;
 
-			loading_img.css( 'opacity', "1");
+			loading_img.css({'display': 'inline-block'});
+			
 			$.post(ajaxurl, data, function(resp) {
 		            
 	            // hide loading
-	            loading_img.css( 'opacity', '0' );
+	            loading_img.hide();
 	            var css_class = 'alert alert-success';
 	            $.each( resp ,function( index, val ){
 	            	if (val.status == 'Fail') {
 	            		css_class = 'alert alert-danger';
-	            		console.log(css_class);
 	            	};
 	            	$( ".responce-mesages" ).append( "<p class='"+css_class+"'><strong>"+val.msg+"</strong></p>" );
 	            });

@@ -9,12 +9,40 @@
     color: #20b7a6;
 }
 .rem-loading-img {
-	width: 20px !important;
-	display: inline-block !important;
-	opacity: 0;
-	margin-right: 5px;
+    display: inline-block;
+    border: 6px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 6px solid #3498db;
+    width: 50px;
+    height: 50px;
+    -webkit-animation: spin 1s linear infinite; /* Safari */
+    animation: spin 1s linear infinite;
+    display: none;
 }
 
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.form-loader {
+    margin-right: 10px;
+    display: inline-block;
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid #3498db;
+    -webkit-animation: spin 1s linear infinite; /* Safari */
+    animation: spin 1s linear infinite;
+    width: 20px;
+    height: 20px;
+    display: none;
+}
 
 .product-check-label {
     display: block;

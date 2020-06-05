@@ -13,12 +13,8 @@
 			  <tbody class="wishlist_table_boday">
 			  </tbody>
 			</table>
-			<div class="loading-table">
-				<img class="" src="<?php echo REM_WISHLIST_URL; ?>/loading-icon.gif" style="
-					    height: 50px;
-					    width: 50px;
-					    text-align: center;
-					">
+			<div class="loading-table text-center">
+				<div class="rem-loading-img"></div>
 			</div>
 		</div>
 	</div>
@@ -38,17 +34,19 @@
 		    </div>
 		  </div>
 		  <div class="form-group">
+		    <div class="col-sm-12">
+		      <input type="tel" class="form-control" name="client_phone" placeholder=<?php _e( 'Phone No.', "wishlist-real-estate-manager-extension" ); ?> >
+		    </div>
+		  </div>
+		  <div class="form-group">
 		    <div class=" col-sm-12">
 		      <textarea class="form-control" rows="3" name="message" placeholder=<?php _e( 'Message', "wishlist-real-estate-manager-extension" ); ?> required></textarea>
 		    </div>
 		  </div>
 		  <div class="form-group">
-		    <div class="col-sm-offset-8 col-sm-2">
-
-		    	<img class="rem-loading-img pull-right" src="<?php echo REM_WISHLIST_URL  ?>/loading-icon.gif">
-		   	</div>
-		    <div class="col-sm-2">
-		      	<input type="submit" class="btn btn-primary btn-block" value="<?php _e( 'Send', "wishlist-real-estate-manager-extension"); ?>">
+		    <div class="col-sm-12 text-right">
+				<div class="form-loader"></div>
+		      	<input type="submit" class="btn btn-primary" value="<?php _e( 'Send', "wishlist-real-estate-manager-extension"); ?>">
 		    </div>
 		  </div>
 		</form>

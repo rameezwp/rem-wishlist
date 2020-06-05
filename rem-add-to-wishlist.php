@@ -24,7 +24,6 @@ class REM_WISHLIST {
 	function __construct(){
 
 		// adding wishlist button
-		add_action( 'rem_listing_footer', array( $this, 'add_wishlist_button' ) , 10, 3 );
         add_action( 'rem_single_property_slider', array($this, 'add_wishlist_button_in_single_property' ), 10, 1 );
         add_filter( 'rem_admin_settings_fields', array($this, 'wishlist_settings_menu') );
         // addning menu
@@ -47,18 +46,9 @@ class REM_WISHLIST {
 		add_action( 'wp_enqueue_scripts', array( $this, 'load_frontend_scripts' ) );
 	}
 
-	function add_wishlist_button(  $property_id, $style = '' , $target = '' ) {
-
-	    if ( ($style != '1' && $style != '2' && REM_VERSION >= '10.7.0')  ) {
-	    	
-			echo '<a href="#" title="'.rem_get_option('wl_added_tooltip', 'Add to wishlist').'" class="btn btn-default rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i></a>';
-	    }
-	}
-
 	function add_wishlist_button_in_single_property(  $property_id ) {
 	    
 		echo '<p class="text-center" style="margin-top: 5px;">';
-		echo ' <img class="rem-loading-img" src="'.REM_WISHLIST_URL.'/loading-icon.gif">';
 		echo '<a href="#" title="'.rem_get_option('wl_added_tooltip', 'Add to wishlist').'" class="btn btn-default btn-center rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i>';
 		echo '</a>';
 		echo '<p>';
@@ -139,7 +129,6 @@ class REM_WISHLIST {
 					$html .= 	"<td><a href='". get_the_permalink($post->ID)."'>". $post->post_title. "</a> ". get_post_meta($post->ID,'rem_property_address', true)."</td>";
 					$html .= 	"<td class='hidden-xs'>". ucfirst(get_post_meta($post->ID,"rem_property_type", true )) ."</td>";
 					$html .= 	"<td>";
-						$html .= 	"<img class='rem-loading-img' src='". REM_WISHLIST_URL ."/loading-icon.gif'>";
 						$html .= 	"<a href='' class='remove-property-btn' data-id='". $post->ID ."'><i class='fa fa-trash'></i></a>";
 					$html .= 	"</td>";
 				$html .= 	"</tr>";
@@ -153,6 +142,8 @@ class REM_WISHLIST {
 	function send_email_about_wishlist_properties(){
 
 		$client_name = sanitize_text_field( $_POST['client_name'] );
+		$client_phone = isset($_POST['client_phone']) && !empty($_POST['client_phone']) ? " Phone : ".sanitize_text_field( $_POST['client_phone'] ) : " ";
+		$client_name = $client_name.$client_phone;
 		$client_email = sanitize_email($_POST['client_email']);
 		$message = "Sender: ".sanitize_email( $_POST['client_email'] )."\n";
 		$message .= "Subject: 'Property Inquiry'\n";
