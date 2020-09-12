@@ -51,7 +51,7 @@ class REM_WISHLIST {
 		echo '<p class="text-center" style="margin-top: 5px;">';
 		echo '<a href="#" title="'.rem_get_option('wl_added_tooltip', 'Add to wishlist').'" class="btn btn-default btn-center rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i>';
 		echo '</a>';
-		echo '<p>';
+		echo '</p>';
 	}
 
 	function menu_pages(){
