@@ -6,6 +6,12 @@
 	<li><a href="https://kb.webcodingplace.com/real-estate-manager/wish-list-addon/">Documentation</a></li>
 </ul>
 <h2 id="item-description__changelog">Changelog</h2>
+
+= 1.8 =
+
+* Design Wishlist button on the single property page
+* Bug fixed - Add closing p tag
+
 = 1.7 =
 
 * Wishlist button issue fixed

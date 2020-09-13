@@ -3,7 +3,7 @@
  * Plugin Name: Wishlist - Real Estate Manager Extension
  * Plugin URI: https://webcodingplace.com/real-estate-manager-wordpress-plugin/
  * Description: Add properties to wishlist and then bulk contact.
- * Version: 1.7
+ * Version: 1.8
  * Author: WebCodingPlace
  * Author URI: https://webcodingplace.com/
  * License: GPLv2 or later
