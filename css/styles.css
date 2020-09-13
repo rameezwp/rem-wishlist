@@ -5,8 +5,15 @@
 	right: 110px !important;
 }
 .rem-wishlist-btn .fa {
-
     color: #20b7a6;
+}
+/* css for single property page*/
+.single-rem_property .rem-wishlist-btn {
+    color: #777!important;
+}
+.single-rem_property .rem-wishlist-btn i {
+    font-size: 10px!important;
+    margin-right: 5px!important;
 }
 .rem-loading-img {
     display: inline-block;

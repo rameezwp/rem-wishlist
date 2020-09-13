@@ -26,7 +26,12 @@ jQuery(document).ready(function($) {
 			if (existing_prop.indexOf(prop_id) !== -1) {
 				$(this).html("");
 				$(this).addClass('active');
-				$(this).append( '<i class="fas fa-heart"></i>' );
+				if ($('body').hasClass('single-rem_property') ) {
+	            	$(this).append( '<i class="fas fa-heart"></i> '+rem_wishlist_var.icon_title_attr_remove );	
+	            }else {
+	            	
+					$(this).append( '<i class="fas fa-heart"></i>' );
+	            }
 				$(this).attr( "title", rem_wishlist_var.icon_title_attr_remove );
 			};
 		};
@@ -179,6 +184,7 @@ jQuery(document).ready(function($) {
 	 *
 	*/
 	$(document).on('click', '.rem-wishlist-btn', function(event){
+
 		event.preventDefault();
 		var btn  = $(this);
 		var property_id = $(this).data('id');
@@ -191,7 +197,12 @@ jQuery(document).ready(function($) {
 	            // add icon by ajax
 	            btn.html("");
 	            btn.addClass('active');
-	            btn.append( '<i class="fas fa-heart"></i>' );
+	            if ($('body').hasClass('single-rem_property') ) {
+	            	btn.append( '<i class="fas fa-heart"></i> '+rem_wishlist_var.icon_title_attr_remove );	
+	            }else {
+	            	
+	            	btn.append( '<i class="fas fa-heart"></i>' );	
+	            }
 	            btn.attr( "data-original-title", rem_wishlist_var.icon_title_attr_remove );
 	            btn.attr( "title", rem_wishlist_var.icon_title_attr_remove );
 				if (is_user_logged_in && is_user_logged_in != '') {
@@ -218,11 +229,17 @@ jQuery(document).ready(function($) {
 			};
 		}else{
 			rem_reset_wishlist(property_id);
-			
-			btn.children("i.fas.fa-heart").remove();
+			// btn.children("i.fas.fa-heart").remove();
+			btn.html("");
 			btn.removeClass('active');
-			btn.append( '<i class="far fa-heart"></i>' );
+			if ($('body').hasClass('single-rem_property') ) {
+				btn.append( '<i class="far fa-heart"></i> '+ rem_wishlist_var.icon_title_attr_added );
+			}else{
+
+				btn.append( '<i class="far fa-heart"></i>' );
+			}
 			btn.attr( "data-original-title", rem_wishlist_var.icon_title_attr_added );
+			btn.attr( "title", rem_wishlist_var.icon_title_attr_added );
 			if (is_user_logged_in && is_user_logged_in != '') {
 
 				wishlist_in_user_profile();

@@ -48,8 +48,8 @@ class REM_WISHLIST {
 
 	function add_wishlist_button_in_single_property(  $property_id ) {
 	    
-		echo '<p class="text-center" style="margin-top: 5px;">';
-		echo '<a href="#" title="'.rem_get_option('wl_added_tooltip', 'Add to wishlist').'" class="btn btn-default btn-center rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i>';
+		echo '<p class="text-right" style="margin-top: 5px;">';
+		echo '<a href="#" title="'.rem_get_option('wl_added_tooltip', 'Add to wishlist').'" style="color: #777;" class="rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i> '.rem_get_option('wl_added_tooltip', 'Add to wishlist');
 		echo '</a>';
 		echo '</p>';
 	}
