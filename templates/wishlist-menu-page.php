@@ -8,9 +8,9 @@ $users = get_users( $args );
 <div class="ich-settings-main-wrap">
 	<table class="table table-bordered" width="100%">
 		<tr>
-			<th><?php _e( "No.", "wishlist-real-estate-manager-extension"); ?></th>
-			<th><?php _e( "User Name", "wishlist-real-estate-manager-extension"); ?></th>
-			<th><?php _e( "Wishlisted Properties", "wishlist-real-estate-manager-extension"); ?></th>
+			<th><?php _e( "No.", "rem-wishlist"); ?></th>
+			<th><?php _e( "User Name", "rem-wishlist"); ?></th>
+			<th><?php _e( "Wishlisted Properties", "rem-wishlist"); ?></th>
 		</tr>
 		<?php 
 		if (!empty($users)) {

@@ -1,14 +1,14 @@
 <?php 
 /*
- * Plugin Name: Wishlist - Real Estate Manager Extension
- * Plugin URI: https://webcodingplace.com/real-estate-manager-wordpress-plugin/
- * Description: Add properties to wishlist and then bulk contact.
- * Version: 1.8
+ * Plugin Name: REM - Wishlist
+ * Plugin URI: https://webcodingplace.com/add-to-wish-list-real-estate-manager/
+ * Description: Add properties into wishlist and then bulk contact.
+ * Version: 1.9
  * Author: WebCodingPlace
  * Author URI: https://webcodingplace.com/
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: wishlist-real-estate-manager-extension
+ * Text Domain: rem-wishlist
  * Domain Path: /languages
 */
  if( ! defined('ABSPATH' ) ){
@@ -86,10 +86,10 @@ class REM_WISHLIST {
 		wp_enqueue_script( 'rem-store2-script', REM_WISHLIST_URL . '/js/store2.js' , array('jquery') );
 		$localize_vars = array(
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'empty_list_msg' => __('Your wishlist is empty.', "wishlist-real-estate-manager-extension"),
-            'already_exist' => __('Your wishlist is empty.', "wishlist-real-estate-manager-extension"),
-            'already_exist_title' => __("Already Added", "wishlist-real-estate-manager-extension"),
-            'already_exist_text' => __("Property already added.", "wishlist-real-estate-manager-extension"),
+            'empty_list_msg' => __('Your wishlist is empty.', "rem-wishlist"),
+            'already_exist' => __('Your wishlist is empty.', "rem-wishlist"),
+            'already_exist_title' => __("Already Added", "rem-wishlist"),
+            'already_exist_text' => __("Property already added.", "rem-wishlist"),
             'removed_property_title' => rem_get_option( 'wl_removing_heading', "Removed" ),
             'removed_property_text' => rem_get_option( 'wl_removing_description', "Property removed from wishlist."),
             'add_property_title' => rem_get_option( 'wl_added_heading', 'Added'),
@@ -284,11 +284,14 @@ class REM_WISHLIST {
 }
 add_action('plugins_loaded', 'rem_wishlist_start');
 function rem_wishlist_start() {
-	load_plugin_textdomain( 'wishlist-real-estate-manager-extension', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
+	load_plugin_textdomain( 'rem-wishlist', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
 	return new REM_WISHLIST();
 }
 
-require_once( 'inc/update.php' );
-if ( is_admin() ) {
-    new REM_WISHLIST_PLUGIN_UPDATER( __FILE__, 'rameezwp', "rem-wishlist" );
-}
+require_once plugin_dir_path( __FILE__ ) . 'lib/wp-package-updater/class-wp-package-updater.php';
+$wishlist_updater = new WP_Package_Updater(
+	'https://kb.webcodingplace.com/',
+	wp_normalize_path( __FILE__ ),
+	wp_normalize_path( plugin_dir_path( __FILE__ ) ),
+	false
+);
