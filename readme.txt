@@ -19,3 +19,46 @@ Add listings into wishlist and bulk contact
 = 1.9 – 8 October 20 =
 - Feature Added: Auto Updates
 - POT updated
+
+= 1.8 =
+
+* Design Wishlist button on the single property page
+* Bug fixed - Add closing p tag
+
+= 1.7 =
+
+* Wishlist button issue fixed
+* New phone field Added to form
+* loaded  design change
+
+= 1.6 =
+
+* Bug fixed - Design wishlist form checkbox
+
+= 1.5 =
+
+* Bug fixed - When user login all properties add to wishlist automatically
+
+= 1.4 =
+
+* Auto-update feature added
+* Settings added for plugin labels
+* Bug fixed
+
+= 1.3 =
+
+* Feature Added: Compatible with REM 10.7.0
+* Feature Added: Admins can check the bookmarked listings of logged in users
+
+= 1.2 =
+
+* Bug Fixed: Translations not working
+* Translation Added: Spanish (es_ES) added
+
+= 1.1 =
+
+* Bug Fixes and translation files added
+
+= 1.0 =
+
+* Initial Release
