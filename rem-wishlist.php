@@ -3,7 +3,7 @@
  * Plugin Name: REM - Wishlist
  * Plugin URI: https://webcodingplace.com/add-to-wish-list-real-estate-manager/
  * Description: Add properties into wishlist and then bulk contact.
- * Version: 1.9
+ * Version: 1.8
  * Author: WebCodingPlace
  * Author URI: https://webcodingplace.com/
  * License: GPLv2 or later
@@ -284,14 +284,14 @@ class REM_WISHLIST {
 }
 add_action('plugins_loaded', 'rem_wishlist_start');
 function rem_wishlist_start() {
+	if (defined('REM_PATH')) {
+		require_once REM_PATH.'/inc/update/wp-package-updater/class-wp-package-updater.php';
+		$wishlist_updater = new WP_Package_Updater(
+			'https://kb.webcodingplace.com/',
+			wp_normalize_path( __FILE__ ),
+			wp_normalize_path( plugin_dir_path( __FILE__ ) )
+		);
+	}
 	load_plugin_textdomain( 'rem-wishlist', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
 	return new REM_WISHLIST();
 }
-
-require_once plugin_dir_path( __FILE__ ) . 'lib/wp-package-updater/class-wp-package-updater.php';
-$wishlist_updater = new WP_Package_Updater(
-	'https://kb.webcodingplace.com/',
-	wp_normalize_path( __FILE__ ),
-	wp_normalize_path( plugin_dir_path( __FILE__ ) ),
-	false
-);
