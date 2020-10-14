@@ -16,8 +16,10 @@ Add listings into wishlist and bulk contact
 
 == Changelog ==
 
-= 1.9 – 8 October 20 =
-- Feature Added: Auto Updates
+= 1.9 – 14 October 20 =
+- Feature Added: Auto Updates Enabled
+- Notice: API files removed
+- Some other small fixed and enhancements
 - POT updated
 
 = 1.8 =
