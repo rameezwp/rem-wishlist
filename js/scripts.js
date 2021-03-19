@@ -77,6 +77,7 @@ jQuery(document).ready(function($) {
 	*/
 	function rem_reset_wishlist(pid) {
 		var existing_prop = rem_get_wishlist_property();
+		pid = pid.toString();
 		//removing index
 		var prop_index = existing_prop.indexOf(pid);
 		existing_prop.splice(prop_index, 1);
