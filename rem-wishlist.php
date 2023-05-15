@@ -1,9 +1,9 @@
 <?php 
 /*
  * Plugin Name: REM - Wishlist
- * Plugin URI: https://webcodingplace.com/add-to-wish-list-real-estate-manager/
+ * Plugin URI: https://wp-rem.com/addons/rem-wish-list/
  * Description: Add properties into wishlist and then bulk contact.
- * Version: 1.9
+ * Version: 2.0
  * Author: WebCodingPlace
  * Author URI: https://webcodingplace.com/
  * License: GPLv2 or later
@@ -24,7 +24,7 @@ class REM_WISHLIST {
 	function __construct(){
 
 		// adding wishlist button
-        add_action( 'rem_single_property_slider', array($this, 'add_wishlist_button_in_single_property' ), 10, 1 );
+        add_action( 'rem_single_property_page_slider', array($this, 'add_wishlist_button_in_single_property' ), 10, 1 );
         add_filter( 'rem_admin_settings_fields', array($this, 'wishlist_settings_menu') );
         // addning menu
         add_action( 'admin_menu', array( $this, 'menu_pages' ) );
@@ -44,9 +44,15 @@ class REM_WISHLIST {
 		
 		// add scripts for plugin
 		add_action( 'wp_enqueue_scripts', array( $this, 'load_frontend_scripts' ) );
+		add_shortcode('rem_wishlist_button', array($this, 'add_wishlist_button_in_single_property' ) );
 	}
 
 	function add_wishlist_button_in_single_property(  $property_id ) {
+
+		if ($property_id == '') {
+			global $post;
+			$property_id = $post->ID;
+		}
 	    
 		echo '<p class="text-right" style="margin-top: 5px;">';
 		echo '<a href="#" title="'.rem_get_option('wl_added_tooltip', 'Add to wishlist').'" style="color: #777;" class="rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i> '.rem_get_option('wl_added_tooltip', 'Add to wishlist');
@@ -64,10 +70,10 @@ class REM_WISHLIST {
 
     function admin_scripts($check){
     	
-    	// if ($check == 'rem_property_page_rem_wishlisted_property') {
+    	if ($check == 'rem_property_page_rem_wishlisted_property') {
     		wp_enqueue_style( 'rem-bootstrap', REM_URL . '/assets/admin/css/bootstrap.min.css' );
     		wp_enqueue_style( 'font-awesome-rem', REM_URL . '/assets/front/css/font-awesome.min.css' );
-    	// }
+    	}
     }
 	function rem_wishlist() {
 		
@@ -94,7 +100,7 @@ class REM_WISHLIST {
             'removed_property_text' => rem_get_option( 'wl_removing_description', "Property removed from wishlist."),
             'add_property_title' => rem_get_option( 'wl_added_heading', 'Added'),
             'add_property_text' => rem_get_option('wl_added_description', 'Property added into wishlist.'),
-            'icon_title_attr_remove' => rem_get_option('wl_removing_tooltip', 'Remove form wishlist.'),
+            'icon_title_attr_remove' => rem_get_option('wl_removing_tooltip', 'Remove from wishlist.'),
             'icon_title_attr_added' => rem_get_option('wl_added_tooltip', 'Add to wishlist.'),
             'form_property_empty_title' => rem_get_option('wl_empty_heading', "Empty"),
             'form_property_empty_text' => rem_get_option( 'wl_empty_description', 'Please select properties to contact'),
@@ -224,8 +230,8 @@ class REM_WISHLIST {
 	            array(
 	                'type' => 'text',
 	                'name' => 'wl_removing_tooltip',
-	                'title' => __( 'Remove form wishlist button', 'real-estate-manager' ),
-	                'help' => __( 'Provide button title text. Default value is "Remove form wishlist"', 'real-estate-manager' ),
+	                'title' => __( 'Remove from wishlist button', 'real-estate-manager' ),
+	                'help' => __( 'Provide button title text. Default value is "Remove from wishlist"', 'real-estate-manager' ),
 	            ),
 
 	            array(
@@ -259,22 +265,22 @@ class REM_WISHLIST {
 	            array(
 	                'type' => 'text',
 	                'name' => 'wl_inquiry_heading',
-	                'title' => __( 'Inquiry form heading', 'real-estate-manager' ),
-	                'help' => __( 'Provide form heading text. Default value is "Contact Agents"', 'real-estate-manager' ),
+	                'title' => __( 'Inquiry from heading', 'real-estate-manager' ),
+	                'help' => __( 'Provide from heading text. Default value is "Contact Agents"', 'real-estate-manager' ),
 	            ),
 
 	            array(
 	                'type' => 'text',
 	                'name' => 'wl_empty_heading',
 	                'title' => __( 'Heading text to without selected property', 'real-estate-manager' ),
-	                'help' => __( 'Provide alert heading text to form submit without any property selected. Default value is "Empty"', 'real-estate-manager' ),
+	                'help' => __( 'Provide alert heading text to from submit without any property selected. Default value is "Empty"', 'real-estate-manager' ),
 	            ),
 
 	            array(
 	                'type' => 'text',
 	                'name' => 'wl_empty_description',
 	                'title' => __( 'Description text to without selected property.', 'real-estate-manager' ),
-	                'help' => __( 'Provide alert description text to form submit without any property selected. Default value is "Please select properties to contact"', 'real-estate-manager' ),
+	                'help' => __( 'Provide alert description text to from submit without any property selected. Default value is "Please select properties to contact"', 'real-estate-manager' ),
 	            ),              
 
 	    );

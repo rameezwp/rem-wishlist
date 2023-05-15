@@ -6,7 +6,7 @@ $args = array(
 $users = get_users( $args );
 ?>
 <div class="ich-settings-main-wrap">
-	<table class="table table-bordered" width="100%">
+	<table class="table table-bordered" style="background-color:#FFF">
 		<tr>
 			<th><?php _e( "No.", "rem-wishlist"); ?></th>
 			<th><?php _e( "User Name", "rem-wishlist"); ?></th>
@@ -16,17 +16,19 @@ $users = get_users( $args );
 		if (!empty($users)) {
 		foreach ($users as $key => $user) { ?>
 		<tr>
-			<th><?php echo $key+1; ?>-</th>
+			<th><?php echo $key+1; ?></th>
 			<th><?php echo $user->display_name; ?></th>
 			<td><?php  
 				$wishlistings = get_user_meta( $user->id, "rem_wishlist_properties", true );
 					
 				if (!empty($wishlistings)) {
+					echo "<ol>";
 					foreach ($wishlistings as $key => $id) {
-						echo $key+1 . '- ';
-						echo '<a href="'.get_permalink($id).'">'.get_the_title( $id ).'</a>';
-						echo " <br>";
+						if ($id) {
+							echo '<li><a target="_blank" href="'.get_permalink($id).'">'.get_the_title( $id ).'</a></li>';
+						}
 					}
+					echo "</ol>";
 				}
 			?></td>
 
