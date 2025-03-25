@@ -4,9 +4,25 @@
 			<table class="table rem-wishlist-table">
 			  <thead>
 				<tr>
-					<th><?php _e( 'Thumbnail', "rem-wishlist" ); ?></th>
-					<th><?php _e( 'Title', "rem-wishlist" ); ?></th>
-					<th class="hidden-xs"><?php _e( 'Type', "rem-wishlist" ); ?></th>
+					<th></th>
+					
+					<?php if (in_array("thumbnail", $fields)) { ?>
+						<th><?php _e( 'Thumbnail', "rem-wishlist" ); ?></th>
+					<?php } ?>
+
+					<?php if (in_array("property_title", $fields)) { ?>
+						<th><?php _e( 'Title', "rem-wishlist" ); ?></th>	
+					<?php } ?>
+					
+					<?php
+						foreach ($fields as $field_key) {
+							$field_key = trim($field_key);
+							if ($field_key != 'thumbnail' && $field_key != 'property_title' && function_exists('rem_get_field_label')) {
+								echo '<th>'.rem_get_field_label($field_key).'</th>';
+							}
+						}
+					?>
+					
 					<th><?php _e( 'Actions', "rem-wishlist" ); ?></th>
 				</tr>
 			  </thead>

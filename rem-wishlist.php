@@ -3,7 +3,7 @@
  * Plugin Name: REM - Wishlist
  * Plugin URI: https://wp-rem.com/addons/rem-wish-list/
  * Description: Add properties into wishlist and then bulk contact.
- * Version: 2.0
+ * Version: 2.1
  * Author: WebCodingPlace
  * Author URI: https://webcodingplace.com/
  * License: GPLv2 or later
@@ -76,6 +76,9 @@ class REM_WISHLIST {
     	}
     }
 	function rem_wishlist() {
+
+		$fields = rem_get_option('wl_fields', 'thumbnail,property_title,property_type,property_status');
+		$fields = explode(",", $fields);
 		
         wp_enqueue_style( 'font-awesome-rem', REM_URL . '/assets/front/css/font-awesome.min.css' );
         wp_enqueue_style( 'rem-bs', REM_URL . '/assets/admin/css/bootstrap.min.css' );
@@ -114,32 +117,28 @@ class REM_WISHLIST {
 		$wishlistings = get_user_meta( $user->ID, "rem_wishlist_properties", true );
 		$prop_ids = isset($_REQUEST['property_ids']) ? $_REQUEST['property_ids'] : $wishlistings;
 		$html = '';
+
+
 		if ($prop_ids != '') {
 			
+			$fields = rem_get_option('wl_fields', 'thumbnail,property_title,property_type,property_status');
+			$fields = explode(",", $fields);
+
 			$args = array(
 				'post_type' => 'rem_property',
-				'posts_per_page' => -1,
+				'posts_per_page' => 299,
 			    'post__in' => $prop_ids
 			);
+
 			$posts = get_posts($args);
-			foreach ($posts as $post) {
-						
-				$html .= 	"<tr>";
-					$html .= 	"<td class='img-wrap'>";
-						$html .= '<label class="product-check-label">';
-							$html .=   "<input type='checkbox' class='property-check' value='" .esc_attr($post->ID)."'>";
-								$html .=   "<span class='checkmark'></span>";
-							$html .=  "</label>";
-						$html .=  get_the_post_thumbnail( $post->ID, array( '50', '50' ));
-					$html .= 	"</td>";
-					$html .= 	"<td><a href='". get_the_permalink($post->ID)."'>". $post->post_title. "</a> ". get_post_meta($post->ID,'rem_property_address', true)."</td>";
-					$html .= 	"<td class='hidden-xs'>". ucfirst(get_post_meta($post->ID,"rem_property_type", true )) ."</td>";
-					$html .= 	"<td>";
-						$html .= 	"<a href='' class='remove-property-btn' data-id='". $post->ID ."'><i class='fa fa-trash'></i></a>";
-					$html .= 	"</td>";
-				$html .= 	"</tr>";
+
+			foreach ($posts as $property) {
+				ob_start();
+				include REM_WISHLIST_PATH . '/templates/wishlist-single-row.php';
+				$html .= ob_get_clean();
 			}
 		}
+
 		$resp = array("ids" => $prop_ids, "html"=>$html );
 		// var_dump($html);
 		wp_send_json( $resp );
@@ -148,11 +147,12 @@ class REM_WISHLIST {
 	function send_email_about_wishlist_properties(){
 
 		$client_name = sanitize_text_field( $_POST['client_name'] );
-		$client_phone = isset($_POST['client_phone']) && !empty($_POST['client_phone']) ? " Phone : ".sanitize_text_field( $_POST['client_phone'] ) : " ";
-		$client_name = $client_name.$client_phone;
+		$client_phone = sanitize_text_field( $_POST['client_phone'] );
 		$client_email = sanitize_email($_POST['client_email']);
-		$message = "Sender: ".sanitize_email( $_POST['client_email'] )."\n";
-		$message .= "Subject: 'Property Inquiry'\n";
+
+		$message = rem_get_option('wl_email_mkp', 'Property Inquiry: '.sanitize_text_field( $_POST['message'] ));
+
+		$message = nl2br(stripcslashes($message));
 			
 		$wishlist_properties = explode(",",sanitize_text_field($_POST['ids']));
 		$resp = array();
@@ -161,7 +161,14 @@ class REM_WISHLIST {
 			$property_src = get_permalink( $property_id );
 			$property_title = get_the_title( $property_id );
 			
-			$message .= "Content 'Information about: ".$property_title."', '".sanitize_text_field( $_POST['message'] );
+
+			$message = str_replace("%property_link%", $property_src, $message);
+			$message = str_replace("%property_title%", $property_title, $message);
+			$message = str_replace("%phone%", $client_phone, $message);
+			$message = str_replace("%name%", $client_name, $message);
+			$message = str_replace("%email%", $client_email, $message);
+			$message = str_replace("%message%", sanitize_text_field( $_POST['message']) , $message);
+
 			$mail_status = $this->send_email_agent( $property_id, $client_name, $client_email, $message );
 			
 			$resp[$property_id] = array(
@@ -181,8 +188,18 @@ class REM_WISHLIST {
         $agent_email = $agent_info->user_email;
 
         $headers = array();
-        $headers[] = 'From: '.$client_name.'  <'.$client_email.'>' . "\r\n";
-        $subject = 'Inquiry form '.$client_name;
+        $headers[] = "From: {$client_name} <{$client_email}>";
+        $headers[] = "Content-Type: text/html";
+        $headers[] = "MIME-Version: 1.0\r\n";
+
+        $subject = rem_get_option('wl_email_sbj', 'Inquiry from %name%');
+
+		$subject = str_replace("%name%", $client_name, $subject);
+		$subject = str_replace("%email%", $client_email, $subject);
+
+		$subject = apply_filters('rem_wl_email_subject', $subject);
+		$message = apply_filters('rem_wl_email_message', $message);
+		$headers = apply_filters('rem_wl_email_headers', $headers);
         
         if (wp_mail( $agent_email, $subject, $message, $headers )) {
             $resp = 'Sent';
@@ -279,9 +296,31 @@ class REM_WISHLIST {
 	            array(
 	                'type' => 'text',
 	                'name' => 'wl_empty_description',
-	                'title' => __( 'Description text to without selected property.', 'real-estate-manager' ),
+	                'title' => __( 'Description text to without selected property', 'real-estate-manager' ),
 	                'help' => __( 'Provide alert description text to from submit without any property selected. Default value is "Please select properties to contact"', 'real-estate-manager' ),
-	            ),              
+	            ),
+
+	            array(
+	                'type' => 'text',
+	                'name' => 'wl_fields',
+	                'title' => __( 'Fields in Wishlist Page', 'real-estate-manager' ),
+	                'help' => __( 'Provide comma separated list of field names to display those fields in the wishlist page', 'real-estate-manager' ),
+	                'default'	=> 'thumbnail,property_title,property_type,property_status'
+	            ),
+
+	            array(
+	                'type' => 'text',
+	                'name' => 'wl_email_sbj',
+	                'title' => __( 'Email Subject', 'real-estate-manager' ),
+	                'help' => __( 'Provide subject for the contact email. You can use these shortcodes', 'real-estate-manager' ).'<code>%name%</code>,<code>%email%</code>',
+	            ),
+
+	            array(
+	                'type' => 'textarea',
+	                'name' => 'wl_email_mkp',
+	                'title' => __( 'Email Content Markup', 'real-estate-manager' ),
+	                'help' => __( 'Provide email markup. You can use these shortcodes.', 'real-estate-manager' ).' <code>%name%</code>, <code>%email%</code>, <code>%phone%</code>, <code>%message%</code>, <code>%property_title%</code>, <code>%property_link%</code>',
+	            ),
 
 	    );
 		$fields = apply_filters( 'rem_wishlist_settings_field', $fields );

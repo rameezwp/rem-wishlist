@@ -309,7 +309,9 @@ jQuery(document).ready(function($) {
 	            $.each( resp ,function( index, val ){
 	            	if (val.status == 'Fail') {
 	            		css_class = 'alert alert-danger';
-	            	};
+	            	} else {
+	            		$('.rem-wishlist-inquiry-frm').trigger("reset");
+	            	}
 	            	$( ".responce-mesages" ).append( "<p class='"+css_class+"'><strong>"+val.msg+"</strong></p>" );
 	            });
 	        });
