@@ -3,8 +3,8 @@ Contributors: Rameez_Iqbal
 Donate link: https://www.paypal.me/webcodingplace
 Tags: real estate, property, listings,  wp property, realty, real estate manager, properties, listing, wpml, property management system, wordpress real estate, real estate CMS, wp real estate, wp agent, German, Spanish, Russian, Arabic, Czech, Persian, Greek, Danish
 Requires at least: 3.5
-Tested up to: 6.7
-Stable tag: 2.1
+Tested up to: 6.8
+Stable tag: 2.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -15,6 +15,9 @@ Add listings into wishlist and bulk contact
 Add listings into wishlist and bulk contact
 
 == Changelog ==
+
+= 2.2 – 8 April 25 =
+- Bug Fixed: When multiple properties are selected, email takes title from the first property
 
 = 2.1 – 25 March 25 =
 - Feature Added: Customize fields on the wishlist page

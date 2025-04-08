@@ -3,7 +3,7 @@
  * Plugin Name: REM - Wishlist
  * Plugin URI: https://wp-rem.com/addons/rem-wish-list/
  * Description: Add properties into wishlist and then bulk contact.
- * Version: 2.1
+ * Version: 2.2
  * Author: WebCodingPlace
  * Author URI: https://webcodingplace.com/
  * License: GPLv2 or later
@@ -149,14 +149,15 @@ class REM_WISHLIST {
 		$client_name = sanitize_text_field( $_POST['client_name'] );
 		$client_phone = sanitize_text_field( $_POST['client_phone'] );
 		$client_email = sanitize_email($_POST['client_email']);
-
-		$message = rem_get_option('wl_email_mkp', 'Property Inquiry: '.sanitize_text_field( $_POST['message'] ));
-
-		$message = nl2br(stripcslashes($message));
 			
 		$wishlist_properties = explode(",",sanitize_text_field($_POST['ids']));
 		$resp = array();
 		foreach ($wishlist_properties as $key => $property_id) {
+
+
+			$message = rem_get_option('wl_email_mkp', 'Property Inquiry: '.sanitize_text_field( $_POST['message'] ));
+
+			$message = nl2br(stripcslashes($message));
 
 			$property_src = get_permalink( $property_id );
 			$property_title = get_the_title( $property_id );
@@ -180,6 +181,7 @@ class REM_WISHLIST {
 		wp_send_json($resp);
 		die(0);
 	}
+
 	function send_email_agent( $property_id, $client_name, $client_email, $message ){
 
 		$property = get_post($property_id);
@@ -289,15 +291,15 @@ class REM_WISHLIST {
 	            array(
 	                'type' => 'text',
 	                'name' => 'wl_empty_heading',
-	                'title' => __( 'Heading text to without selected property', 'real-estate-manager' ),
-	                'help' => __( 'Provide alert heading text to from submit without any property selected. Default value is "Empty"', 'real-estate-manager' ),
+	                'title' => __( 'Alert Title', 'real-estate-manager' ),
+	                'help' => __( 'Provide alert title when no property is selected. Default value is "Empty"', 'real-estate-manager' ),
 	            ),
 
 	            array(
 	                'type' => 'text',
 	                'name' => 'wl_empty_description',
-	                'title' => __( 'Description text to without selected property', 'real-estate-manager' ),
-	                'help' => __( 'Provide alert description text to from submit without any property selected. Default value is "Please select properties to contact"', 'real-estate-manager' ),
+	                'title' => __( 'Alert Description', 'real-estate-manager' ),
+	                'help' => __( 'Provide alert description text when no property is selected. Default value is "Please select properties to contact"', 'real-estate-manager' ),
 	            ),
 
 	            array(
