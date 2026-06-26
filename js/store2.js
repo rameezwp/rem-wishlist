@@ -1,26 +1,27 @@
-/*! store2 - v2.5.1 - 2017-03-28
-* Copyright (c) 2017 Nathan Bubna; Licensed ,  */
+/*! store2 - v2.14.4 - 2024-12-26
+* Copyright (c) 2024 Nathan Bubna; Licensed MIT */
 ;(function(window, define) {
     var _ = {
-        version: "2.5.1",
+        version: "2.14.4",
         areas: {},
         apis: {},
+        nsdelim: '.',
 
         // utilities
         inherit: function(api, o) {
             for (var p in api) {
                 if (!o.hasOwnProperty(p)) {
-                    o[p] = api[p];
+                    Object.defineProperty(o, p, Object.getOwnPropertyDescriptor(api, p));
                 }
             }
             return o;
         },
-        stringify: function(d) {
-            return d === undefined || typeof d === "function" ? d+'' : JSON.stringify(d);
+        stringify: function(d, fn) {
+            return d === undefined || typeof d === "function" ? d+'' : JSON.stringify(d,fn||_.replace);
         },
-        parse: function(s) {
+        parse: function(s, fn) {
             // if it doesn't parse, return as is
-            try{ return JSON.parse(s); }catch(e){ return s; }
+            try{ return JSON.parse(s,fn||_.revive); }catch(e){ return s; }
         },
 
         // extension hooks
@@ -44,18 +45,18 @@
                 if (typeof data === "function"){ return store.transact(key, data, overwrite); }// fn=data, alt=overwrite
                 if (data !== undefined){ return store.set(key, data, overwrite); }
                 if (typeof key === "string" || typeof key === "number"){ return store.get(key); }
+                if (typeof key === "function"){ return store.each(key); }
                 if (!key){ return store.clear(); }
                 return store.setAll(key, data);// overwrite=data, data=key
             });
             store._id = id;
             try {
-                var testKey = '_safariPrivate_';
-                area.setItem(testKey, 'sucks');
+                var testKey = '__store2_test';
+                area.setItem(testKey, 'ok');
                 store._area = area;
                 area.removeItem(testKey);
-            } catch (e) {}
-            if (!store._area) {
-                store._area = _.inherit(_.storageAPI, { items: {}, name: 'fake' });
+            } catch (e) {
+                store._area = _.storage('fake');
             }
             store._ns = namespace || '';
             if (!_.areas[id]) {
@@ -76,19 +77,33 @@
                 }
                 return store;
             },
-            namespace: function(namespace, noSession) {
+            namespace: function(namespace, singleArea, delim) {
+                delim = delim || this._delim || _.nsdelim;
                 if (!namespace){
-                    return this._ns ? this._ns.substring(0,this._ns.length-1) : '';
+                    return this._ns ? this._ns.substring(0,this._ns.length-delim.length) : '';
                 }
                 var ns = namespace, store = this[ns];
                 if (!store || !store.namespace) {
-                    store = _.Store(this._id, this._area, this._ns+ns+'.');//new namespaced api
+                    store = _.Store(this._id, this._area, this._ns+ns+delim);//new namespaced api
+                    store._delim = delim;
                     if (!this[ns]){ this[ns] = store; }
-                    if (!noSession){ store.area('session', _.areas.session); }
+                    if (!singleArea) {
+                        for (var name in _.areas) {
+                            store.area(name, _.areas[name]);
+                        }
+                    }
                 }
                 return store;
             },
-            isFake: function(){ return this._area.name === 'fake'; },
+            isFake: function(force) {
+                if (force) {
+                    this._real = this._area;
+                    this._area = _.storage('fake');
+                } else if (force === false) {
+                    this._area = this._real || this._area;
+                }
+                return this._area.name === 'fake';
+            },
             toString: function() {
                 return 'store'+(this._ns?'.'+this.namespace():'')+'['+this._id+']';
             },
@@ -101,27 +116,33 @@
                 return !!(this._in(key) in this._area);
             },
             size: function(){ return this.keys().length; },
-            each: function(fn, and) {
+            each: function(fn, fill) {// fill is used by keys(fillList) and getAll(fillList))
                 for (var i=0, m=_.length(this._area); i<m; i++) {
                     var key = this._out(_.key(this._area, i));
                     if (key !== undefined) {
-                        if (fn.call(this, key, and || this.get(key)) === false) {
+                        if (fn.call(this, key, this.get(key), fill) === false) {
                             break;
                         }
                     }
                     if (m > _.length(this._area)) { m--; i--; }// in case of removeItem
                 }
-                return and || this;
+                return fill || this;
             },
-            keys: function() {
-                return this.each(function(k, list){ list.push(k); }, []);
+            keys: function(fillList) {
+                return this.each(function(k, v, list){ list.push(k); }, fillList || []);
             },
             get: function(key, alt) {
-                var s = _.get(this._area, this._in(key));
-                return s !== null ? _.parse(s) : alt || s;// support alt for easy default mgmt
+                var s = _.get(this._area, this._in(key)),
+                    fn;
+                if (typeof alt === "function") {
+                    fn = alt;
+                    alt = null;
+                }
+                return s !== null ? _.parse(s, fn) :
+                    alt != null ? alt : s;
             },
-            getAll: function() {
-                return this.each(function(k, all){ all[k] = this.get(k); }, {});
+            getAll: function(fillObj) {
+                return this.each(function(k, v, all){ all[k] = v; }, fillObj || {});
             },
             transact: function(key, fn, alt) {
                 var val = this.get(key, alt),
@@ -130,11 +151,16 @@
                 return this;
             },
             set: function(key, data, overwrite) {
-                var d = this.get(key);
+                var d = this.get(key),
+                    replacer;
                 if (d != null && overwrite === false) {
                     return data;
                 }
-                return _.set(this._area, this._in(key), _.stringify(data), overwrite) || d;
+                if (typeof overwrite === "function") {
+                    replacer = overwrite;
+                    overwrite = undefined;
+                }
+                return _.set(this._area, this._in(key), _.stringify(data, replacer), overwrite) || d;
             },
             setAll: function(data, overwrite) {
                 var changed, val;
@@ -146,8 +172,26 @@
                 }
                 return changed;
             },
-            remove: function(key) {
+            add: function(key, data, replacer) {
                 var d = this.get(key);
+                if (d instanceof Array) {
+                    data = d.concat(data);
+                } else if (d !== null) {
+                    var type = typeof d;
+                    if (type === typeof data && type === 'object') {
+                        for (var k in data) {
+                            d[k] = data[k];
+                        }
+                        data = d;
+                    } else {
+                        data = d + data;
+                    }
+                }
+                _.set(this._area, this._in(key), _.stringify(data, replacer));
+                return data;
+            },
+            remove: function(key, alt) {
+                var d = this.get(key, alt);
                 _.remove(this._area, this._in(key));
                 return d;
             },
@@ -184,6 +228,9 @@
                     k;
             }
         },// end _.storeAPI
+        storage: function(name) {
+            return _.inherit(_.storageAPI, { items: {}, name: name });
+        },
         storageAPI: {
             length: 0,
             has: function(k){ return this.items.hasOwnProperty(k); },
@@ -208,8 +255,7 @@
                 }
             },
             getItem: function(k){ return this.has(k) ? this.items[k] : null; },
-            clear: function(){ for (var k in this.list){ this.removeItem(k); } },
-            toString: function(){ return this.length+' items in '+this.name+'Storage'; }
+            clear: function(){ for (var k in this.items){ this.removeItem(k); } }
         }// end _.storageAPI
     };
 
@@ -220,6 +266,7 @@
     store._ = _;// for extenders and debuggers...
     // safely setup store.session (throws exception in FF for file:/// urls)
     store.area("session", (function(){try{ return sessionStorage; }catch(e){}})());
+    store.area("page", _.storage("page"));
 
     if (typeof define === 'function' && define.amd !== undefined) {
         define('store2', [], function () {
@@ -233,4 +280,4 @@
         window.store = store;
     }
 
-})(this, this.define);
+})(this, this && this.define);
