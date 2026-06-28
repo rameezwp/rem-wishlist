@@ -24,7 +24,9 @@ class REM_WISHLIST {
 	function __construct(){
 
 		// adding wishlist button
-        add_action( 'rem_single_property_page_slider', array($this, 'add_wishlist_button_in_single_property' ), 10, 1 );
+        add_action( 'rem_single_property_page_slider', array($this, 'maybe_add_wishlist_button_in_single_property' ), 10, 1 );
+        // contribute the wishlist button to the core property actions renderer
+        add_filter( 'rem_property_action_buttons', array($this, 'add_wishlist_action_button'), 10, 3 );
         add_filter( 'rem_admin_settings_fields', array($this, 'wishlist_settings_menu') );
         // addning menu
         add_action( 'admin_menu', array( $this, 'menu_pages' ) );
@@ -47,17 +49,53 @@ class REM_WISHLIST {
 		add_shortcode('rem_wishlist_button', array($this, 'add_wishlist_button_in_single_property' ) );
 	}
 
+	/**
+	 * Auto-injected button under the single-property gallery.
+	 *
+	 * Only fires for the default gallery placement. Templates that render their
+	 * own actions (e.g. via rem_property_actions) can suppress it cleanly with
+	 * the rem_wishlist_show_auto_single_button filter instead of unhooking.
+	 */
+	function maybe_add_wishlist_button_in_single_property( $property_id ) {
+		if ( ! apply_filters( 'rem_wishlist_show_auto_single_button', true, $property_id ) ) {
+			return;
+		}
+		$this->add_wishlist_button_in_single_property( $property_id );
+	}
+
 	function add_wishlist_button_in_single_property(  $property_id ) {
 
 		if ($property_id == '') {
 			global $post;
 			$property_id = $post->ID;
 		}
-	    
+
 		echo '<p class="text-right" style="margin-top: 5px;">';
 		echo '<a href="#" title="'.rem_get_option('wl_added_tooltip', 'Add to wishlist').'" style="color: #777;" class="rem-wishlist-btn" data-id="'.$property_id.'" ><i class="far fa-heart"></i> '.rem_get_option('wl_added_tooltip', 'Add to wishlist');
 		echo '</a>';
 		echo '</p>';
+	}
+
+	/**
+	 * Contribute the wishlist button to the core property actions renderer.
+	 *
+	 * @param array $buttons     Existing buttons keyed by name.
+	 * @param int   $property_id Property post ID.
+	 * @param array $args        Renderer args (context, etc.).
+	 * @return array
+	 */
+	function add_wishlist_action_button( $buttons, $property_id, $args ) {
+		$title = rem_get_option( 'wl_added_tooltip', __( 'Add to wishlist', 'real-estate-manager' ) );
+
+		// Honour the renderer's label preference. When labels are off we render
+		// an icon-only button and flag it so the wishlist JS doesn't append the
+		// tooltip text on single property pages (data-wl-icon-only).
+		$show_labels = ! empty( $args['labels'] );
+		$label       = $show_labels ? ' <span class="rem-action-label">' . esc_html( $title ) . '</span>' : '';
+		$icon_only   = $show_labels ? '' : ' data-wl-icon-only="1"';
+
+		$buttons['wishlist'] = '<a href="#" class="rem-action-btn rem-wishlist-btn" title="' . esc_attr( $title ) . '" data-id="' . esc_attr( $property_id ) . '"' . $icon_only . '><i class="far fa-heart"></i>' . $label . '</a>';
+		return $buttons;
 	}
 
 	function menu_pages(){
