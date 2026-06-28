@@ -86,11 +86,15 @@ class REM_WISHLIST {
 	 */
 	function add_wishlist_action_button( $buttons, $property_id, $args ) {
 		$title = rem_get_option( 'wl_added_tooltip', __( 'Add to wishlist', 'real-estate-manager' ) );
-		$label = '';
-		if ( isset( $args['context'] ) && $args['context'] === 'single' ) {
-			$label = ' <span class="rem-action-label">' . esc_html( $title ) . '</span>';
-		}
-		$buttons['wishlist'] = '<a href="#" class="rem-action-btn rem-wishlist-btn" title="' . esc_attr( $title ) . '" data-id="' . esc_attr( $property_id ) . '"><i class="far fa-heart"></i>' . $label . '</a>';
+
+		// Honour the renderer's label preference. When labels are off we render
+		// an icon-only button and flag it so the wishlist JS doesn't append the
+		// tooltip text on single property pages (data-wl-icon-only).
+		$show_labels = ! empty( $args['labels'] );
+		$label       = $show_labels ? ' <span class="rem-action-label">' . esc_html( $title ) . '</span>' : '';
+		$icon_only   = $show_labels ? '' : ' data-wl-icon-only="1"';
+
+		$buttons['wishlist'] = '<a href="#" class="rem-action-btn rem-wishlist-btn" title="' . esc_attr( $title ) . '" data-id="' . esc_attr( $property_id ) . '"' . $icon_only . '><i class="far fa-heart"></i>' . $label . '</a>';
 		return $buttons;
 	}
 

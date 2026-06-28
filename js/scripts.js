@@ -26,7 +26,7 @@ jQuery(document).ready(function($) {
 			if (existing_prop.indexOf(prop_id) !== -1) {
 				$(this).html("");
 				$(this).addClass('active');
-				if ($('body').hasClass('single-rem_property') ) {
+				if ($('body').hasClass('single-rem_property') && !$(this).data('wl-icon-only') ) {
 	            	$(this).append( '<i class="fas fa-heart"></i> '+rem_wishlist_var.icon_title_attr_remove );	
 	            }else {
 	            	
@@ -198,7 +198,7 @@ jQuery(document).ready(function($) {
 	            // add icon by ajax
 	            btn.html("");
 	            btn.addClass('active');
-	            if ($('body').hasClass('single-rem_property') ) {
+	            if ($('body').hasClass('single-rem_property') && !$(this).data('wl-icon-only') ) {
 	            	btn.append( '<i class="fas fa-heart"></i> '+rem_wishlist_var.icon_title_attr_remove );	
 	            }else {
 	            	
@@ -233,7 +233,7 @@ jQuery(document).ready(function($) {
 			// btn.children("i.fas.fa-heart").remove();
 			btn.html("");
 			btn.removeClass('active');
-			if ($('body').hasClass('single-rem_property') ) {
+			if ($('body').hasClass('single-rem_property') && !$(this).data('wl-icon-only') ) {
 				btn.append( '<i class="far fa-heart"></i> '+ rem_wishlist_var.icon_title_attr_added );
 			}else{
 
