@@ -3,7 +3,7 @@
  * Plugin Name: REM - Wishlist
  * Plugin URI: https://wp-rem.com/addons/rem-wish-list/
  * Description: Add properties into wishlist and then bulk contact.
- * Version: 2.2
+ * Version: 2.3
  * Author: WebCodingPlace
  * Author URI: https://webcodingplace.com/
  * License: GPLv2 or later
